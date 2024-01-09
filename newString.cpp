@@ -22,11 +22,10 @@ public:
     const char* c_str();
     void erase(int pos, int count);
     void erase(int pos);
-   // void append();
-   // char* substr();
-   // char* copy();
-   // void resize();
-   // void swap();
+   // const char* substr(size_t& pos, size_t& len);
+    size_t copy(char* s, size_t len, size_t pos);
+    void resize(size_t n, char c);
+    void swap(STR& s_ptr);
    // char* find();
    // void to_string();
    // void stoi();
@@ -207,6 +206,78 @@ void STR::erase(int pos)
         }
 }
 
+/*const char* STR::substr(size_t& pos, size_t& len)
+{
+    if (pos >= m_size || pos > len || len >= m_size || empty()) {
+        std::cout << "no way";
+        return nullptr;
+    }
+    size_t size = len - pos + 2;
+    char* tmp = new char [size];
+    int j = 0;
+    for (int i = pos; i < size; ++i) {
+        tmp[j++] = m_ptr[i];
+    }
+    
+    
+    return tmp;    
+}*/
+
+size_t STR::copy(char* s, size_t len, size_t pos)
+{
+    if (pos >= m_size || len >= m_size|| pos > len || empty()) {
+        std::cout << "no way";
+        return 0;
+    }
+    size_t count = 0;
+    while (pos <= len) {
+        s[count] = m_ptr[pos];
+        ++pos;
+        ++count;
+    } 
+    return count;
+}
+
+void STR::resize(size_t n, const char c)
+{
+    if (n < m_size) {
+        m_size = n;
+    } else if (n >= m_size && n < m_cap) {
+       for (int i = m_size; i < n; ++i) {
+            m_ptr[i] = c;
+        }
+            m_size = n;
+    } else { 
+        m_cap = n;
+        char* tmp = new char [m_cap];
+        for (int i = 0; i < m_size; ++i) {
+            tmp[i] = m_ptr[i];
+        }
+        for (int i = m_size; i < m_cap; ++i) {
+            tmp[i] = c;
+        }
+        delete m_ptr;
+        m_ptr = tmp;
+        tmp = nullptr;
+    }
+
+}
+
+
+void STR::swap(STR& s_ptr)
+{
+     
+        size_t tmp_size = m_size;
+        m_size = s_ptr.m_size;
+        s_ptr.m_size = tmp_size;
+        size_t tmp_cap = m_cap;
+        m_cap = s_ptr.m_cap;
+        s_ptr.m_cap = tmp_cap;
+        char* tmp = m_ptr;
+        m_ptr = s_ptr.m_ptr;
+        s_ptr.m_ptr = tmp;   
+}
+
 STR::~STR() 
 {
 	clear();
@@ -222,29 +293,55 @@ int main()
 	A.push_back('f');
 	A.push_back('g');
 	A.print();	
+    std::cout << std::endl;
+    STR B;
+    B.push_back('a');
+    B.push_back('z');
+    B.push_back('y');
+    B.print();
 	std::cout << std::endl;
-	A.insert('a', 2);
-	A.print();
-	std::cout << std::endl;
+    A.swap(B);
+    A.print();
+    std::cout << std::endl;
+    B.print();
+//	A.insert('a', 2);
+//	A.print();
+//	std::cout << std::endl;
 //	A.at(2) = 'M';
 //	A.print();
 //	A.pop_back();
 //	A.print();
-	std::cout << std::endl;
-	std::cout << A.empty();
-	std::cout << A.capacity() << std::endl;
-	A.shrink_to_fit();
-	std::cout << A.capacity() << std::endl;
-	A.print();
+//	std::cout << std::endl;
+//	std::cout << A.empty();
+//	std::cout << A.capacity() << std::endl;
+//	A.shrink_to_fit();
+//	std::cout << A.capacity() << std::endl;
+//	A.print();
     std::cout << std::endl;
    // std::cout << A.front() << std::endl;
    // std::cout << A.back() << std::endl;
    // std::cout << A.c_str() << std::endl;
    // A.erase(3);
    // A.print();
-    std::cout << std::endl;
-    A.erase(3, 2);
-    A.print();
-    std::cout << std::endl;
-	
+  //  std::cout << std::endl;
+   // A.erase(3, 2);
+   // A.print();
+   // std::cout << std::endl;
+   // std::cout << A.substr (0, 2) << std::endl;
+   // A.print();
+  //  char s[4]; 
+    //std::cout << A.copy(s, 3, 1) << std::endl;
+   // std::cout << s << std::endl;
+   // A.resize(10, 's');
+   // A.print();
+   // std::cout << A.size();
+    
+    /*std::string str1 = "hello";
+    std::string str2 = "Mileeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeena";
+    std::cout << str1.size() << " " << str1.capacity() << std::endl;
+    std::cout << str2.size() << " " << str2.capacity() << std::endl;
+    str1.swap(str2);
+    std::cout << str1.size() << " " << str1.capacity() << std::endl;
+    std::cout << str2.size() << " " << str2.capacity() << std::endl;*/
+ 
 }
