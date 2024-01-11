@@ -6,13 +6,14 @@ class STR {
 	char* m_ptr;
 public:
 	STR();
-	STR constructor ();
+	STR constructor();
 	STR constructor (size_t size);
 	STR constructor (size_t size, STR& val);
-	STR CopyConst (STR& ob);
-//	friend std::ostream& operator << (std::ostream& os, STR ob);
+	STR(const STR& ob); // copy constructor
+    STR(STR&& ob); // move constructor
+	friend std::ostream& operator << (std::ostream& os, const STR& ob);
 //	friend void operator + (STR& ob1, STR& ob2);
-	void print();
+	void print() const;
 	char& at(int);
 	size_t size();
 	size_t capacity();
@@ -32,7 +33,7 @@ public:
     size_t copy(char* s, size_t len, size_t pos);
     void resize(size_t n, char c);
     void swap(STR& s_ptr);
-	size_t find(STR& ob);
+	size_t find(const STR& ob, size_t pos = 0);
    // void to_string();
    // void stoi();
 	~STR();
@@ -75,14 +76,30 @@ STR STR::constructor (size_t size, STR& val)
 	return ob;
 }
 
-STR STR::CopyConst(STR& ob)
+STR::STR(const STR& ob)
 {
-	ob.m_ptr = m_ptr;
-	ob.m_size = m_size;
-	ob.m_cap = m_cap;
-	return ob;
+   std::cout << "copy constructor" << std::endl;
+    this -> m_cap = ob.m_cap;
+	this -> m_size = ob.m_size;
+    if (ob.m_ptr != nullptr) {
+        this -> m_ptr = new char[m_cap];
+        for (size_t i = 0; i < m_size; ++i) {
+            this-> m_ptr[i] = ob.m_ptr[i];
+        }
+    }
 }
-	
+
+STR::STR(STR&& ob) 
+{
+    std::cout << "move constructor" << std::endl;
+    this -> m_size = ob.m_size;
+    this -> m_cap = ob.m_cap;
+    this -> m_ptr = ob.m_ptr;
+    ob.m_size = 0;
+    ob.m_cap = 0;
+    ob.m_ptr = 0;
+}
+
 void STR::clear()
 {
 	if (m_ptr != nullptr) {
@@ -103,8 +120,7 @@ size_t STR::capacity()
 	return m_cap;
 }
 
-void STR::print()
-{
+void STR::print() const {
 	if (m_ptr != nullptr) {
 	for (int i = 0; i < m_size; ++i) {
 		std::cout << m_ptr[i];
@@ -132,6 +148,7 @@ void STR::reserve()
 	if (m_cap == 0) {
 		m_cap = 8;
 		m_ptr = new char[m_cap];
+        return;
 	}
 	m_cap *= 2;
 	char* tmp = new char[m_cap];
@@ -323,34 +340,32 @@ void STR::swap(STR& s_ptr)
         s_ptr.m_ptr = tmp;   
 }
 
-size_t STR::find(STR& ob)
+size_t STR::find(const STR& ob, size_t pos)
 {
-	size_t pos = 0;
-	for (int i = 0; i < m_size; ++i) {
-		if (m_ptr[i] == ob.m_ptr[i]) {
+	if (pos >= m_size || ob.m_size > m_size || empty()) {
+        std::cout << "no way";
+        return 0;
+    }
+    size_t j = 0;
+	for (size_t i = 0; i < m_size; ++i) {
+		if (m_ptr[i] == ob.m_ptr[j]) {
 			pos = i;
-			break;
-		}
-	}
-	size_t len = 0;
-
-	for (int i = pos; i < m_size; ++i) {
-		if (m_ptr[i] != ob.m_ptr[i]) {
-			len = i - 1;
-			break;
+            ++j;
+           // std::cout << pos << std::endl;
 		}
 	}
 
+        pos -= ob.m_size - 1;
 		return pos;
 }
-
-/*void operator + (STR& ob1, STR& ob2)
+/*
+void operator + (STR& ob1, STR& ob2)
 {
 	ob1.m_ptr + ob2.m_ptr;
 
-}
+}*/
 
-std::ostream& operator << (std::ostream& os, STR ob)
+std::ostream& operator << (std::ostream& os, const STR& ob)
 {
 	if (ob.m_ptr != nullptr) {
 		for (int i = 0; i < ob.m_size; ++i) {
@@ -358,7 +373,7 @@ std::ostream& operator << (std::ostream& os, STR ob)
 		}
 	}
 	return os;
-} */
+} 
 
 STR::~STR()
 {
@@ -382,11 +397,13 @@ int main()
 	A.push_back(' ');
 	A.push_back('e');
 	A.push_back('x');
-    std::cout << std::endl;
+   // STR BB(std::move(A));
+  //  std::cout << BB << std::endl;
+    std::cout << A  << std::endl;
 	STR B;
 
-	B.push_back('a');
-	B.push_back('n');
+	B.push_back('e');
+	B.push_back('x');
 
 	std::cout << A.find(B);
 }
